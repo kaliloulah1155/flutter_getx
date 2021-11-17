@@ -114,8 +114,74 @@ class HomeController extends GetxController {
 
        }catch(exception){
 
+         Get.snackbar("Exception", exception.toString(),
+             colorText: Colors.black,
+             backgroundColor: Colors.red,
+             snackPosition: SnackPosition.BOTTOM);
        }
     }
+
+    //Update Task
+  void updateTask(Map data){
+    try{
+         isProcessing(true);
+
+         TaskProvider().updateTask(data).then((resp){
+           if(resp=='success'){
+             clearTextEditingController();
+             isProcessing(false);
+
+             Get.snackbar("Edit Task","Task Updated", colorText: Colors.white,backgroundColor: Colors.green,snackPosition:SnackPosition.BOTTOM);
+             lstTask.clear();
+             refreshList();
+
+           }else{
+             Get.snackbar("Edit Task","Failed to Update Task", colorText: Colors.white,backgroundColor: Colors.red,snackPosition:SnackPosition.BOTTOM);
+           }
+         },onError: (err){
+           isProcessing(true);
+           Get.snackbar("Error", err.toString(), colorText: Colors.red);
+         });
+
+    }catch(exception){
+      isProcessing(true);
+      Get.snackbar("Exception", exception.toString(),
+          colorText: Colors.black,
+          backgroundColor: Colors.red,
+          snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
+  //Update Task
+  void deleteTask(Map data){
+    try{
+      isProcessing(true);
+
+      TaskProvider().deleteTask(data).then((resp){
+        if(resp=='success'){
+          clearTextEditingController();
+          isProcessing(false);
+
+          Get.snackbar("Delete Task","Task is deleted", colorText: Colors.white,backgroundColor: Colors.green,snackPosition:SnackPosition.BOTTOM);
+          lstTask.clear();
+          refreshList();
+
+        }else{
+          Get.snackbar("Delete Task","Failed to delete Task", colorText: Colors.white,backgroundColor: Colors.red,snackPosition:SnackPosition.BOTTOM);
+        }
+      },onError: (err){
+        isProcessing(true);
+        Get.snackbar("Error", err.toString(), colorText: Colors.red);
+      });
+
+    }catch(exception){
+      isProcessing(true);
+      Get.snackbar("Exception", exception.toString(),
+          colorText: Colors.black,
+          backgroundColor: Colors.red,
+          snackPosition: SnackPosition.BOTTOM);
+    }
+  }
 
     void clearTextEditingController(){
       titleEditingController.clear();

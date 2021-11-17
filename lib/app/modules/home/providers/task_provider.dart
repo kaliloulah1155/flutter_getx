@@ -19,15 +19,44 @@ class TaskProvider extends GetConnect {
   }
 
   Future<String> saveTask(Map data) async{
-    try{
-       final response=await post("http://10.0.2.2:8000/api/saveTask",data);
-       if (response.status.hasError) {
-         return Future.error(response.statusText);
-       } else {
-         return response.body['result'];
+        try{
+           final response=await post("http://10.0.2.2:8000/api/saveTask",data);
+           if (response.status.hasError) {
+             return Future.error(response.statusText);
+           } else {
+             return response.body['result'];
+           }
+        }catch(exception){
+          return Future.error(exception.toString());
+        }
+    }
+
+    //Update Data
+    Future<String> updateTask(Map data) async{
+       try{
+          final response=await post("http://10.0.2.2:8000/api/updateTask",data);
+          if(response.status.hasError){
+            return Future.error(response.statusText);
+          }else{
+            return response.body['result'];
+          }
+       }catch(exception){
+         return Future.error(exception);
        }
+    }
+
+
+  //Update Data
+  Future<String> deleteTask(Map data) async{
+    try{
+      final response=await post("http://10.0.2.2:8000/api/deleteTask",data);
+      if(response.status.hasError){
+        return Future.error(response.statusText);
+      }else{
+        return response.body['result'];
+      }
     }catch(exception){
-      return Future.error(exception.toString());
+      return Future.error(exception);
     }
   }
 

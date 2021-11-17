@@ -203,13 +203,21 @@ class HomeView extends GetView<HomeController> {
                                             color: Colors.green,
                                           ),
                                           onTap: () {
-                                            print('je suis la');
+
+                                            displayEditTaskWindow(
+                                                controller.lstTask[index]['task_id'],
+                                                controller.titleEditingController.text= controller.lstTask[index]['task_name'],
+                                                controller.descriptionEditingController.text=controller.lstTask[index]['task_description'],
+                                                controller.selectedPriority.value= controller.lstTask[index]['task_priority']);
+
                                           }),
                                       SizedBox(height: 6),
                                       GestureDetector(
                                         child: Icon(Icons.delete,
                                             color: Colors.red),
-                                        onTap: () {},
+                                        onTap: () {
+                                          displayDeleteDialog(controller.lstTask[index]['task_id']);
+                                        },
                                       ),
                                     ],
                                   ),
@@ -242,6 +250,122 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
+  void displayEditTaskWindow(
+      int id , String title,String description,int priority
+      ){
+
+    Get.bottomSheet(
+       Container(
+         decoration: BoxDecoration(
+           borderRadius: BorderRadius.only(
+               topRight: Radius.circular(16), topLeft: Radius.circular(16)),
+           color: Colors.white,
+         ),
+         child: Padding(
+           padding: EdgeInsets.only(left: 16,right: 16,top: 16),
+           child:ListView(
+             children: [
+               Column(
+                 crossAxisAlignment: CrossAxisAlignment.start,
+                 children: [
+                   Text(
+                     'Edit Task',
+                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                   ),
+                   SizedBox(
+                     height: 8,
+                   ),
+                   TextField(
+                     decoration: InputDecoration(
+                         labelText: 'Title',
+                         hintText: 'Title',
+                         border: OutlineInputBorder(
+                           borderRadius: BorderRadius.circular(8),
+                         )),
+                     controller: controller.titleEditingController,
+                   ),
+                   SizedBox(
+                     height: 8,
+                   ),
+                   TextField(
+                     decoration: InputDecoration(
+                         labelText: 'Description',
+                         hintText: 'Description',
+                         border: OutlineInputBorder(
+                           borderRadius: BorderRadius.circular(8),
+                         )),
+                     controller: controller.descriptionEditingController,
+                   ),
+                   SizedBox(
+                     height: 8,
+                   ),
+                   Obx(
+                         () => DropdownButton<String>(
+                       items: [
+                         DropdownMenuItem(
+                           value: "1",
+                           child: Text('High Priority'),
+                         ),
+                         DropdownMenuItem(
+                           value: "2",
+                           child: Text('Medium Priority'),
+                         ),
+                         DropdownMenuItem(
+                           value: "3",
+                           child: Text('Lower Priority'),
+                         ),
+                       ],
+                       value: controller.selectedPriority.value.toString(),
+                       hint: Text('Select Task Priority'),
+                       isExpanded: true,
+                       onChanged: (selectedValue) {
+                         //print(selectedValue);
+                         controller.selectedPriority.value =
+                             int.parse(selectedValue!);
+                       },
+                     ),
+                   ),
+                   SizedBox(
+                     height: 8,
+                   ),
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.end,
+                     children: [
+                       Obx(() {
+                         return RaisedButton(
+                             child: Text(controller.isProcessing.value == true
+                                 ? 'Processing'
+                                 : 'Update'),
+                             onPressed: () {
+                               if (controller.isProcessing.value == false) {
+                                 updateTask(
+                                   id,
+                                     controller.titleEditingController.text,
+                                     controller
+                                         .descriptionEditingController.text,
+                                     controller.selectedPriority.value);
+                               }
+                             });
+                       })
+                     ],
+                   )
+                 ],
+               ),
+             ],
+           ) ,
+         ),
+       )
+    );
+  }
+  void updateTask(int id, String title,String description,int priority){
+    controller.updateTask({
+      'id': id,
+      'title': title,
+      'description': description,
+      'priority': priority
+    });
+    Get.back();
+  }
   void displayAddTaskWindow() {
     Get.bottomSheet(
       Container(
@@ -349,6 +473,25 @@ class HomeView extends GetView<HomeController> {
     controller.saveTask({'title':title,'description':description,'priority':priority});
     Get.back();
   }
+
+  void displayDeleteDialog(int id){
+    Get.defaultDialog(
+      title:  "Delete Task",
+      titleStyle: TextStyle(fontSize: 20),
+      middleText: "Are you sure to delete task ?",
+      textCancel: "Cancel",
+      textConfirm: "Confirm",
+      confirmTextColor: Colors.white,
+      onCancel: (){},
+      onConfirm: (){
+        controller.deleteTask({'id':id});
+        Get.back();
+      }
+
+    );
+  }
+
+
 }
 
 
