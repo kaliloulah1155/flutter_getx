@@ -15,13 +15,20 @@ class HomeController extends GetxController {
   ScrollController scrollController = ScrollController();
   var isMoreDataAvailable = true.obs;
 
+  late TextEditingController titleEditingController, descriptionEditingController;
+  var selectedPriority=1.obs;
+  var isProcessing =false.obs;
+
   @override
   void onInit() {
     super.onInit();
     getTask(page);
 
     //For pagination
-    paginateTask();
+   // paginateTask();
+
+    titleEditingController = TextEditingController();
+    descriptionEditingController = TextEditingController();
   }
 
   //Fetch Data
@@ -82,7 +89,38 @@ class HomeController extends GetxController {
       }
     });
   }
+  //Refresh List
+  void refreshList() async{
+    page=1;
+    getTask(page);
+  }
 
+     //Save Data
+    void saveTask(Map data){
+       try{
+         isProcessing(true);
+
+         TaskProvider().saveTask(data).then((resp){
+            if(resp=="success"){
+              clearTextEditingController();
+              isProcessing(false);
+              Get.snackbar("Add Task","Task Added", colorText: Colors.white,backgroundColor: Colors.green,snackPosition:SnackPosition.BOTTOM);
+              lstTask.clear();
+               refreshList();
+            }else{
+              Get.snackbar("Add Task","Failed to Add Task", colorText: Colors.white,backgroundColor: Colors.red,snackPosition:SnackPosition.BOTTOM);
+            }
+         });
+
+       }catch(exception){
+
+       }
+    }
+
+    void clearTextEditingController(){
+      titleEditingController.clear();
+      descriptionEditingController.clear();
+    }
   @override
   void onClose() {
     // TODO: implement onClose
